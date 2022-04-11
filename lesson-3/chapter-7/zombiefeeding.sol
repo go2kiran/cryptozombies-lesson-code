@@ -1,5 +1,7 @@
-pragma solidity ^0.4.25;
+pragma solidity >=0.5.0 <0.6.0;
+
 import "./zombiefactory.sol";
+
 contract KittyInterface {
   function getKitty(uint256 _id) external view returns (
     bool isGestating,
@@ -14,6 +16,7 @@ contract KittyInterface {
     uint256 genes
   );
 }
+
 contract ZombieFeeding is ZombieFactory {
 
   KittyInterface kittyContract;
@@ -27,13 +30,15 @@ contract ZombieFeeding is ZombieFactory {
   }
 
   function _isReady(Zombie storage _zombie) internal view returns (bool) {
-      return (_zombie.readyTime <= now);
+    return (_zombie.readyTime <= now);
   }
 
-  function feedAndMultiply(uint _zombieId, uint _targetDna, string _species) internal {
+  function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) internal {
     require(msg.sender == zombieToOwner[_zombieId]);
     Zombie storage myZombie = zombies[_zombieId];
+
     require(_isReady(myZombie));
+
     _targetDna = _targetDna % dnaModulus;
     uint newDna = (myZombie.dna + _targetDna) / 2;
     if (keccak256(abi.encodePacked(_species)) == keccak256(abi.encodePacked("kitty"))) {
